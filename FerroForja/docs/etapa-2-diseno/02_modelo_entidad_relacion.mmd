@@ -1,0 +1,205 @@
+erDiagram
+    OPERARIO ||--o{ BITACORA_LOG : "genera"
+    PERFIL ||--o{ OPERARIO_PERFIL : "contiene"
+    OPERARIO ||--o{ OPERARIO_PERFIL : "posee"
+
+    SOCIO ||--o{ ABASTECIMIENTO : "provee"
+    SOCIO ||--o{ EXPENDIO : "abastecimiento"
+
+    FABRICANTE ||--o{ FICHA : "clasifica"
+    ARTICULO ||--o{ FICHA : "define"
+    EMPAQUE ||--o{ FICHA : "empaqueta"
+    MEDIDA_BASE ||--o{ FICHA : "mide"
+
+    FICHA ||--|| ALMACEN_NIVEL : "mantiene_nivel"
+    FICHA ||--o{ ALMACEN_ASIENTO : "registra_asiento"
+    FICHA ||--o{ ABASTECIMIENTO_DETALLE : "incluye"
+    FICHA ||--o{ EXPENDIO_DETALLE : "incluye"
+    FICHA ||--o{ RESTITUCION_DETALLE : "incluye"
+    FICHA ||--o{ REAJUSTE_ALMACEN : "ajusta"
+
+    ABASTECIMIENTO ||--|{ ABASTECIMIENTO_DETALLE : "detalla"
+    EXPENDIO ||--|{ EXPENDIO_DETALLE : "detalla"
+    RESTITUCION ||--|{ RESTITUCION_DETALLE : "detalla"
+
+    EXPENDIO ||--o{ RESTITUCION : "origina_opcional"
+    ABASTECIMIENTO ||--o{ ALMACEN_ASIENTO : "genera_entrada"
+    EXPENDIO ||--o{ ALMACEN_ASIENTO : "genera_salida"
+    RESTITUCION ||--o{ ALMACEN_ASIENTO : "genera_reintegro"
+    REAJUSTE_ALMACEN ||--|| ALMACEN_ASIENTO : "produce"
+
+    OPERARIO {
+        bigint id PK
+        varchar username UK
+        varchar password_hash
+        varchar nombre_visible
+        boolean activo
+        datetime creado_en
+    }
+
+    PERFIL {
+        bigint id PK
+        varchar nombre UK
+    }
+
+    SOCIO {
+        bigint id PK
+        varchar tipo_identificacion
+        varchar nro_identificacion UK
+        varchar nombre_legal
+        varchar telefono
+        varchar email
+        varchar direccion
+        boolean es_comprador
+        boolean es_suministrador
+        boolean activo
+    }
+
+    ARTICULO {
+        bigint id PK
+        varchar nombre
+        varchar descripcion
+        boolean activo
+    }
+
+    FABRICANTE {
+        bigint id PK
+        varchar nombre UK
+        boolean activo
+    }
+
+    EMPAQUE {
+        bigint id PK
+        varchar nombre UK
+        boolean activo
+    }
+
+    MEDIDA_BASE {
+        bigint id PK
+        varchar codigo UK
+        varchar nombre
+    }
+
+    FICHA {
+        bigint id PK
+        bigint articulo_id FK
+        bigint fabricante_id FK
+        bigint empaque_id FK
+        bigint medida_base_id FK
+        varchar codigo_ean UK
+        decimal tarifa_publico
+        boolean activo
+    }
+
+    ALMACEN_NIVEL {
+        bigint id PK
+        bigint ficha_id FK,UK
+        decimal volumen_libre
+        decimal coste_medio_ponderado
+        datetime actualizado_en
+        bigint version
+    }
+
+    ALMACEN_ASIENTO {
+        bigint id PK
+        bigint ficha_id FK
+        varchar tipo_asiento
+        decimal cantidad
+        decimal coste_individual_asiento
+        decimal nivel_obtenido
+        varchar folio_tipo
+        bigint folio_id
+        varchar motivo
+        datetime marca_tiempo
+        bigint operario_id FK
+    }
+
+    ABASTECIMIENTO {
+        bigint id PK
+        varchar consecutivo UK
+        bigint suministrador_id FK
+        datetime marca_tiempo
+        decimal total
+        varchar estado
+        varchar causa_anulacion
+        bigint operario_id FK
+    }
+
+    ABASTECIMIENTO_DETALLE {
+        bigint id PK
+        bigint abastecimiento_id FK
+        bigint ficha_id FK
+        decimal cantidad
+        decimal coste_individual
+        decimal subtotal
+    }
+
+    EXPENDIO {
+        bigint id PK
+        varchar consecutivo UK
+        bigint comprador_id FK
+        datetime marca_tiempo
+        decimal subtotal
+        decimal total
+        decimal importe_abonado_efectivo
+        varchar estado
+        varchar causa_anulacion
+        bigint operario_id FK
+    }
+
+    EXPENDIO_DETALLE {
+        bigint id PK
+        bigint expendio_id FK
+        bigint ficha_id FK
+        decimal cantidad
+        decimal tarifa_individual
+        decimal coste_congelado_individual
+        decimal subtotal
+    }
+
+    RESTITUCION {
+        bigint id PK
+        varchar consecutivo UK
+        bigint expendio_id FK "nullable"
+        datetime marca_tiempo
+        varchar tipo_restitucion
+        varchar motivo
+        varchar estado
+        bigint operario_id FK
+    }
+
+    RESTITUCION_DETALLE {
+        bigint id PK
+        bigint restitucion_id FK
+        bigint ficha_id FK
+        decimal cantidad
+        decimal coste_individual_aplicado
+    }
+
+    REAJUSTE_ALMACEN {
+        bigint id PK
+        varchar consecutivo UK
+        bigint ficha_id FK
+        varchar tipo_reajuste
+        decimal cantidad
+        decimal coste_individual_ficha
+        varchar motivo
+        datetime marca_tiempo
+        bigint operario_autorizo_id FK
+    }
+
+    TIQUETE_CORRELATIVO {
+        bigint id PK
+        varchar tipo_identificacion UK
+        bigint ultimo_nro
+        varchar prefijo
+    }
+
+    BITACORA_LOG {
+        bigint id PK
+        bigint operario_id FK
+        datetime marca_tiempo
+        varchar modulo
+        varchar accion
+        text descripcion
+    }

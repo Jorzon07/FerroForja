@@ -1,0 +1,16 @@
+/* Estilos globales FerroForja: utilidades industriales reutilizables */
+:root { --ff-amarillo: #FFC400; --ff-negro: #141414; }
+
+.franja-peligro {
+  background-image: repeating-linear-gradient(-45deg, #FFC400 0 14px, #141414 14px 28px);
+}
+.franja-peligro-fina {
+  height: 10px;
+  background-image: repeating-linear-gradient(-45deg, #FFC400 0 8px, #141414 8px 16px);
+}
+.numero-dato { font-family: "JetBrains Mono", Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+@media print {
+  body { background: #fff !important; background-image: none !important; }
+  .no-imprimir { display: none !important; }
+}
